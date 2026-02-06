@@ -35,6 +35,7 @@ jobs:
             runner: ubuntu-24.04-arm
 
     runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v6
@@ -56,14 +57,14 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
 
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
-      - name: Build and push
+      - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
         env:
@@ -73,8 +74,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: .
           target: runner
-          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
-          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
+          outputs: type=image,name-canonical=true,push-by-digest=true,push=true
 
       - name: Export digest
         run: |
