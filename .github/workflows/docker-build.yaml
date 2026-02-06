@@ -12,6 +12,7 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - "!*.md"
+      - .github/workflows/docker-build.yaml
 
 permissions:
   contents: read
